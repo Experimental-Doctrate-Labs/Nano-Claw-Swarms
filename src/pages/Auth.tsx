@@ -1,10 +1,11 @@
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { motion } from "framer-motion";
-import { Zap, Mail, Lock, ArrowRight, Loader2 } from "lucide-react";
+import { Mail, Lock, ArrowRight, Loader2 } from "lucide-react";
 import { useNavigate, Link } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { Home } from "lucide-react";
+import logoImage from "@/assets/nano-claw-logo.jpeg";
 
 const Auth = () => {
   const [isSignUp, setIsSignUp] = useState(false);
@@ -55,9 +56,7 @@ const Auth = () => {
         className="w-full max-w-sm relative z-10"
       >
         <div className="flex items-center gap-2 mb-8 justify-center">
-          <div className="w-8 h-8 rounded-lg bg-primary/20 flex items-center justify-center claw-border">
-            <Zap className="w-4 h-4 text-claw-ember" />
-          </div>
+          <img src={logoImage} alt="Nano Claw" className="w-8 h-8 rounded-lg object-cover claw-border" />
           <span className="text-lg font-bold gradient-text-claw">NANO CLAW</span>
         </div>
 
