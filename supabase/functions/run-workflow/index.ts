@@ -119,7 +119,7 @@ serve(async (req) => {
     const { data: { user }, error: authError } = await userClient.auth.getUser();
     if (authError || !user) throw new Error("Unauthorized");
 
-    const { workflow_id, input } = await req.json();
+    const { workflow_id, input, org_id } = await req.json();
     if (!workflow_id || !input) throw new Error("workflow_id and input are required");
 
     // Fetch workflow
@@ -130,6 +130,8 @@ serve(async (req) => {
       .single();
     if (wfError || !workflow) throw new Error("Workflow not found");
 
+    const runOrgId = org_id || workflow.org_id;
+
     // Create run
     const { data: run, error: runError } = await supabase
       .from("runs")
@@ -137,6 +139,7 @@ serve(async (req) => {
         user_id: user.id,
         workflow_id,
         workflow_name: workflow.name,
+        org_id: runOrgId,
         status: "running",
         input,
       })
@@ -147,6 +150,7 @@ serve(async (req) => {
     // Log start
     await supabase.from("logs").insert({
       user_id: user.id,
+      org_id: runOrgId,
       level: "info",
       message: `Run started for workflow "${workflow.name}"`,
       workflow_name: workflow.name,
