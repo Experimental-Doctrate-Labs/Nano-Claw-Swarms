@@ -1,5 +1,6 @@
-import { Zap, BookOpen } from "lucide-react";
+import { BookOpen } from "lucide-react";
 import { Link } from "react-router-dom";
+import logoImage from "@/assets/nano-claw-logo.jpeg";
 
 const About = () => {
   return (
@@ -7,9 +8,7 @@ const About = () => {
       <div className="fixed inset-0 grain-overlay animate-grain z-50 pointer-events-none" />
       <div className="max-w-2xl relative z-10">
         <div className="flex items-center gap-2 mb-8">
-          <div className="w-8 h-8 rounded-lg bg-primary/20 flex items-center justify-center claw-border">
-            <Zap className="w-4 h-4 text-claw-ember" />
-          </div>
+          <img src={logoImage} alt="Nano Claw" className="w-8 h-8 rounded-lg object-cover claw-border" />
           <span className="text-lg font-bold gradient-text-claw">NANO CLAW SWARMS</span>
         </div>
 

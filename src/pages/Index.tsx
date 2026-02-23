@@ -2,6 +2,7 @@ import { motion } from "framer-motion";
 import { ArrowRight, BookOpen, Zap, Bot, Activity, Terminal, Layers } from "lucide-react";
 import { Link } from "react-router-dom";
 import heroImage from "@/assets/hero-lobster.jpg";
+import logoImage from "@/assets/nano-claw-logo.jpeg";
 
 const FeatureCard = ({ icon: Icon, title, description, delay, className = "" }: { icon: any; title: string; description: string; delay: number; className?: string }) => (
   <motion.div
@@ -47,9 +48,7 @@ const Index = () => {
       {/* Nav */}
       <nav className="fixed top-0 left-0 right-0 z-40 flex items-center justify-between px-6 md:px-12 py-5 bg-background/60 backdrop-blur-lg border-b border-border/20">
         <div className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-lg bg-primary/20 flex items-center justify-center claw-border">
-            <Zap className="w-4 h-4 text-claw-ember" />
-          </div>
+          <img src={logoImage} alt="Nano Claw" className="w-8 h-8 rounded-lg object-cover claw-border" />
           <span className="text-lg font-bold gradient-text-claw">NANO CLAW</span>
         </div>
         <div className="flex items-center gap-4">

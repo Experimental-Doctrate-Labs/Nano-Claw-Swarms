@@ -2,11 +2,12 @@ import { useEffect, useState } from "react";
 import { Outlet, useNavigate, Link, useLocation } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import {
-  LayoutDashboard, Bot, GitBranch, Play, FileText, KeyRound, Settings, LogOut, Zap, Menu, X,
+  LayoutDashboard, Bot, GitBranch, Play, FileText, KeyRound, Settings, LogOut, Menu, X,
   Building2, ChevronDown, Plus
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { OrgProvider, useOrg } from "@/contexts/OrgContext";
+import logoImage from "@/assets/nano-claw-logo.jpeg";
 
 const navItems = [
   { title: "Overview", path: "/console", icon: LayoutDashboard },
@@ -107,9 +108,7 @@ const SidebarContent = ({ user, onSignOut, sidebarOpen, setSidebarOpen }: any) =
     >
       {/* Logo */}
       <div className="flex items-center gap-2 px-5 py-5 border-b border-border/30">
-        <div className="w-7 h-7 rounded-md bg-primary/20 flex items-center justify-center claw-border">
-          <Zap className="w-3.5 h-3.5 text-claw-ember" />
-        </div>
+        <img src={logoImage} alt="Nano Claw" className="w-7 h-7 rounded-md object-cover claw-border" />
         <span className="text-sm font-bold gradient-text-claw">NANO CLAW</span>
       </div>
 
