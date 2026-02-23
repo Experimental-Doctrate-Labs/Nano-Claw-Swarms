@@ -15,7 +15,7 @@
     --popover: 240 25% 4%;
     --popover-foreground: 30 30% 94%;
 
-    --primary: 14 100% 55%;
+    --primary: 18 90% 38%;
     --primary-foreground: 30 30% 94%;
 
     --secondary: 240 20% 8%;
@@ -24,33 +24,33 @@
     --muted: 240 15% 10%;
     --muted-foreground: 30 10% 60%;
 
-    --accent: 25 100% 60%;
+    --accent: 22 85% 42%;
     --accent-foreground: 30 30% 94%;
 
-    --destructive: 8 100% 56%;
+    --destructive: 4 80% 42%;
     --destructive-foreground: 30 30% 94%;
 
-    --border: 20 40% 18%;
+    --border: 18 30% 14%;
     --input: 240 15% 12%;
-    --ring: 14 100% 55%;
+    --ring: 18 90% 38%;
 
     --radius: 0.625rem;
 
     --sidebar-background: 240 25% 3%;
     --sidebar-foreground: 30 15% 78%;
-    --sidebar-primary: 14 100% 55%;
+    --sidebar-primary: 18 90% 38%;
     --sidebar-primary-foreground: 30 30% 94%;
     --sidebar-accent: 240 15% 8%;
     --sidebar-accent-foreground: 30 30% 94%;
-    --sidebar-border: 20 40% 14%;
-    --sidebar-ring: 14 100% 55%;
+    --sidebar-border: 18 30% 12%;
+    --sidebar-ring: 18 90% 38%;
 
     /* Nano Claw custom tokens */
-    --claw-red: 8 100% 56%;
-    --claw-ember: 20 100% 58%;
-    --claw-gold: 36 100% 64%;
-    --claw-glow: 20 100% 58% / 0.35;
-    --claw-stroke: 20 100% 58% / 0.22;
+    --claw-red: 4 80% 40%;
+    --claw-ember: 18 85% 36%;
+    --claw-gold: 30 80% 46%;
+    --claw-glow: 18 85% 36% / 0.35;
+    --claw-stroke: 18 85% 36% / 0.22;
     --claw-surface: 240 25% 6%;
 
     --gradient-claw: linear-gradient(135deg, hsl(var(--claw-red)), hsl(var(--claw-ember)), hsl(var(--claw-gold)));
