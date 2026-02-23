@@ -1,8 +1,9 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { motion, AnimatePresence } from "framer-motion";
-import { Bot, Plus, Pencil, Trash2, Play, Loader2, X } from "lucide-react";
+import { Bot, Plus, Pencil, Trash2, Loader2, X } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { useOrg } from "@/contexts/OrgContext";
 
 interface Agent {
   id: string;
@@ -34,11 +35,15 @@ const Agents = () => {
   const [form, setForm] = useState(defaultAgent);
   const [saving, setSaving] = useState(false);
   const { toast } = useToast();
+  const { currentOrg, currentRole } = useOrg();
+  const canEdit = currentRole === "owner" || currentRole === "admin" || currentRole === "member";
 
   const fetchAgents = async () => {
+    if (!currentOrg) { setLoading(false); return; }
     const { data, error } = await supabase
       .from("agents")
       .select("*")
+      .eq("org_id", currentOrg.id)
       .order("created_at", { ascending: false });
     if (error) {
       toast({ title: "Error loading agents", description: error.message, variant: "destructive" });
@@ -48,9 +53,10 @@ const Agents = () => {
     setLoading(false);
   };
 
-  useEffect(() => { fetchAgents(); }, []);
+  useEffect(() => { setLoading(true); fetchAgents(); }, [currentOrg?.id]);
 
   const handleSave = async () => {
+    if (!currentOrg) return;
     setSaving(true);
     try {
       const { data: { session } } = await supabase.auth.getSession();
@@ -78,6 +84,7 @@ const Agents = () => {
           temperature: form.temperature,
           max_loops: form.max_loops,
           user_id: session.user.id,
+          org_id: currentOrg.id,
         });
         if (error) throw error;
         toast({ title: "Agent created" });
@@ -113,6 +120,15 @@ const Agents = () => {
     setShowForm(true);
   };
 
+  if (!currentOrg) {
+    return (
+      <div className="glass-panel p-12 text-center">
+        <Bot className="w-12 h-12 text-muted-foreground mx-auto mb-4 opacity-40" />
+        <p className="text-muted-foreground">Create an organization first to manage agents.</p>
+      </div>
+    );
+  }
+
   return (
     <div>
       <div className="flex items-center justify-between mb-8">
@@ -120,35 +136,30 @@ const Agents = () => {
           <h1 className="text-2xl font-bold text-foreground mb-1">Agents</h1>
           <p className="text-sm text-muted-foreground">Configure LLM-powered agents</p>
         </div>
-        <button
-          onClick={() => { setEditing(null); setForm(defaultAgent); setShowForm(true); }}
-          className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium text-foreground glow-claw transition-all hover:scale-[1.02]"
-          style={{ background: "linear-gradient(135deg, hsl(8 100% 56%), hsl(20 100% 58%))" }}
-        >
-          <Plus className="w-4 h-4" />
-          New Agent
-        </button>
+        {canEdit && (
+          <button
+            onClick={() => { setEditing(null); setForm(defaultAgent); setShowForm(true); }}
+            className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium text-foreground glow-claw transition-all hover:scale-[1.02]"
+            style={{ background: "linear-gradient(135deg, hsl(8 100% 56%), hsl(20 100% 58%))" }}
+          >
+            <Plus className="w-4 h-4" />
+            New Agent
+          </button>
+        )}
       </div>
 
       {/* Agent form drawer */}
       <AnimatePresence>
         {showForm && (
           <motion.div
-            initial={{ opacity: 0, x: 300 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: 300 }}
+            initial={{ opacity: 0, x: 300 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 300 }}
             className="fixed right-0 top-0 h-full w-full max-w-md bg-card/95 backdrop-blur-xl border-l border-border/50 z-40 overflow-y-auto"
           >
             <div className="p-6">
               <div className="flex items-center justify-between mb-6">
-                <h2 className="text-lg font-semibold text-foreground">
-                  {editing ? "Edit Agent" : "New Agent"}
-                </h2>
-                <button onClick={() => { setShowForm(false); setEditing(null); }} className="text-muted-foreground hover:text-foreground">
-                  <X className="w-5 h-5" />
-                </button>
+                <h2 className="text-lg font-semibold text-foreground">{editing ? "Edit Agent" : "New Agent"}</h2>
+                <button onClick={() => { setShowForm(false); setEditing(null); }} className="text-muted-foreground hover:text-foreground"><X className="w-5 h-5" /></button>
               </div>
-
               <div className="space-y-4">
                 <div>
                   <label className="text-xs text-muted-foreground mb-1 block">Name</label>
@@ -195,12 +206,9 @@ const Agents = () => {
                       className="w-full px-3 py-2 rounded-lg bg-input border border-border text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring" />
                   </div>
                 </div>
-                <button
-                  onClick={handleSave}
-                  disabled={saving || !form.name}
+                <button onClick={handleSave} disabled={saving || !form.name}
                   className="w-full flex items-center justify-center gap-2 py-2.5 rounded-lg font-semibold text-foreground text-sm glow-claw transition-all hover:scale-[1.02] disabled:opacity-50"
-                  style={{ background: "linear-gradient(135deg, hsl(8 100% 56%), hsl(20 100% 58%))" }}
-                >
+                  style={{ background: "linear-gradient(135deg, hsl(8 100% 56%), hsl(20 100% 58%))" }}>
                   {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : (editing ? "Update Agent" : "Create Agent")}
                 </button>
               </div>
@@ -209,11 +217,8 @@ const Agents = () => {
         )}
       </AnimatePresence>
 
-      {/* Agent list */}
       {loading ? (
-        <div className="flex items-center justify-center py-16">
-          <Loader2 className="w-6 h-6 animate-spin text-claw-ember" />
-        </div>
+        <div className="flex items-center justify-center py-16"><Loader2 className="w-6 h-6 animate-spin text-claw-ember" /></div>
       ) : agents.length === 0 ? (
         <div className="glass-panel p-12 text-center">
           <Bot className="w-12 h-12 text-muted-foreground mx-auto mb-4 opacity-40" />
@@ -222,12 +227,7 @@ const Agents = () => {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {agents.map((agent) => (
-            <motion.div
-              key={agent.id}
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="glass-panel p-5 group"
-            >
+            <motion.div key={agent.id} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="glass-panel p-5 group">
               <div className="flex items-start justify-between mb-3">
                 <div className="flex items-center gap-3">
                   <div className="w-9 h-9 rounded-lg bg-primary/10 flex items-center justify-center claw-border">
@@ -238,18 +238,14 @@ const Agents = () => {
                     <p className="text-xs text-muted-foreground">{agent.model_provider}/{agent.model_name}</p>
                   </div>
                 </div>
-                <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                  <button onClick={() => openEdit(agent)} className="p-1.5 rounded-md hover:bg-muted/50 text-muted-foreground hover:text-foreground">
-                    <Pencil className="w-3.5 h-3.5" />
-                  </button>
-                  <button onClick={() => handleDelete(agent.id)} className="p-1.5 rounded-md hover:bg-destructive/10 text-muted-foreground hover:text-destructive">
-                    <Trash2 className="w-3.5 h-3.5" />
-                  </button>
-                </div>
+                {canEdit && (
+                  <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <button onClick={() => openEdit(agent)} className="p-1.5 rounded-md hover:bg-muted/50 text-muted-foreground hover:text-foreground"><Pencil className="w-3.5 h-3.5" /></button>
+                    <button onClick={() => handleDelete(agent.id)} className="p-1.5 rounded-md hover:bg-destructive/10 text-muted-foreground hover:text-destructive"><Trash2 className="w-3.5 h-3.5" /></button>
+                  </div>
+                )}
               </div>
-              {agent.description && (
-                <p className="text-xs text-muted-foreground mb-2">{agent.description}</p>
-              )}
+              {agent.description && <p className="text-xs text-muted-foreground mb-2">{agent.description}</p>}
               <div className="flex items-center gap-3 text-xs text-muted-foreground">
                 <span>Temp: {agent.temperature}</span>
                 <span>Loops: {agent.max_loops}</span>
