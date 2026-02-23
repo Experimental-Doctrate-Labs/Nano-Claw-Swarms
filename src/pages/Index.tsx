@@ -112,6 +112,15 @@ const Index = () => {
               <BookOpen className="w-4 h-4" />
               View Docs
             </a>
+            <button
+              onClick={() => {
+                navigator.clipboard.writeText("Ec7RgGzuiqJPPJ8iYzjUmtvRfzMKUUrCVRtuHf5ppump");
+              }}
+              className="inline-flex items-center gap-2 px-6 py-3.5 rounded-lg font-mono text-xs text-muted-foreground glass-panel hover:text-foreground transition-colors truncate max-w-[320px]"
+              title="Click to copy"
+            >
+              Ec7RgGzuiqJPPJ8iYzjUmtvRfzMKUUrCVRtuHf5ppump
+            </button>
           </motion.div>
 
           {/* Stats bar */}
